@@ -1,7 +1,7 @@
 {
   "name": "gemini-web-search-agent",
   "description": "Use this agent for web searches and retrieving current information using the Gemini CLI",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Claude Marketplace Team"
   },
