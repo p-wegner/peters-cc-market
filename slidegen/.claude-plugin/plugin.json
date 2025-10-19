@@ -1,0 +1,32 @@
+{
+  "name": "slidegen",
+  "description": "Complete presentation creation system with specialized agents, customizable templates, and AI-powered workflow automation. Supports Marp and Slidev with research-backed content generation.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Claude Marketplace Team"
+  },
+  "homepage": "https://github.com/p-wegner/claude-marketplace",
+  "repository": "https://github.com/p-wegner/claude-marketplace",
+  "license": "MIT",
+  "keywords": ["presentations", "marp", "slidev", "slides", "ai", "automation", "templates"],
+  "category": "productivity",
+  "tags": ["presentations", "marp", "slidev", "templates", "automation"],
+  "commands": [
+    "./commands/new-presentation.md",
+    "./commands/setup-agents.md"
+  ],
+  "agents": [
+    "./agents/slide-architect.md",
+    "./agents/web-researcher.md",
+    "./agents/content-reviewer.md",
+    "./agents/browser-reviewer.md",
+    "./agents/formats/marp-formatter.md",
+    "./agents/formats/slidev-formatter.md"
+  ],
+  "skills": [
+    "./skills/presentation-creator/",
+    "./skills/slide-enhancer/",
+    "./skills/template-customizer/",
+    "./skills/research-presenter/"
+  ]
+}
