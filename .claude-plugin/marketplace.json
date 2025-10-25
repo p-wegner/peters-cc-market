@@ -100,7 +100,7 @@
       "agents": [
         "./agents/parallel-worker.md"
       ],
-      "strict": false
+      "strict": true
     }
   ]
 }
