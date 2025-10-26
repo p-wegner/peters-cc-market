@@ -61,6 +61,15 @@ Generate structured coding-aider plans that mirror the IntelliJ coding-aider plu
 /plugin install coding-aider@claude-marketplace
 ```
 
+### 🚀 [PRD Parallel Execution](./plugins/prd-parallel-execution/)
+**Type**: Plugin with Skill & Command | **Category**: Development & Automation
+
+Convert PRDs into contract-first, parallel implementation plans and execute them with automated subagent orchestration. Reduces development time by 40-60% through strategic task organization.
+
+```bash
+/plugin install prd-parallel-execution@claude-marketplace
+```
+
 ## 📋 Plugin Categories
 
 | Category | Plugins | Description |
@@ -69,8 +78,8 @@ Generate structured coding-aider plans that mirror the IntelliJ coding-aider plu
 | 🛠️ **Productivity & Development** | 1 | Skill/command creation tools |
 | ⚡ **Productivity & Automation** | 1 | Parallel task execution and background processing |
 | 📊 **Presentations** | 1 | Presentation creation and automation |
-| 💻 **Development & Planning** | 1 | Structured development planning and coding-aider integration |
-| 📈 **Total** | **5** | **Comprehensive toolkit** |
+| 💻 **Development & Planning** | 2 | Structured development planning and PRD execution automation |
+| 📈 **Total** | **6** | **Comprehensive toolkit** |
 
 ## 🎯 What Each Plugin Does
 
@@ -115,6 +124,17 @@ Generate structured coding-aider plans that mirror the IntelliJ coding-aider plu
   - IntelliJ coding-aider plugin compatibility
 - **Use when**: You need structured development planning, want to organize complex projects, or prefer the coding-aider planning methodology
 
+### 🚀 PRD Parallel Execution
+- **Perfect for**: Converting PRDs into executable implementation plans with automated parallel development
+- **Features**:
+  - **PRD-to-Implementation-Plan Skill**: Converts PRDs into contract-first, parallel implementation plans
+  - **Execute PRD Plan Command**: Orchestrates parallel subagent execution across development streams
+  - 3-phase execution strategy (Contracts → Implementation → Integration)
+  - 40-60% development time reduction through strategic parallelization
+  - Contract-first development with API specs and mock services
+  - Automated subagent orchestration with dependency management
+- **Use when**: You have PRDs that need implementation, want to accelerate development with parallel execution, or prefer contract-first development methodology
+
 ## 🏗️ Repository Structure
 
 ```
@@ -125,7 +145,8 @@ claude-marketplace/
 │   ├── 🛠️ skill-command-creator/
 │   ├── 📊 slidegen/
 │   ├── ⚡ parallel-subagent-plugin/
-│   └── 💻 coding-aider/
+│   ├── 💻 coding-aider/
+│   └── 🚀 prd-parallel-execution/
 ├── 📁 docs/                     # Detailed documentation
 │   ├── skills.md               # Agent Skills guide
 │   ├── marketplace.md          # Marketplace usage guide
@@ -173,6 +194,6 @@ This marketplace is licensed under the MIT License. Individual plugins may have 
 
 **Last Updated**: 2025-10-26
 **Marketplace Version**: 1.0.2
-**Total Plugins**: 5
+**Total Plugins**: 6
 
-> 💡 **Tip**: Start with the Skill & Command Creator if you're new to plugins - it will help you understand how Skills and commands work! For structured development planning, try the Coding Aider plugin.
+> 💡 **Tip**: Start with the Skill & Command Creator if you're new to plugins - it will help you understand how Skills and commands work! For structured development planning, try the Coding Aider plugin. For PRD-driven development, use the PRD Parallel Execution plugin.

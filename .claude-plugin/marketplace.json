@@ -121,6 +121,29 @@
         "./skills/coding-aider-plan-generator"
       ],
       "strict": true
+    },
+    {
+      "name": "prd-parallel-execution",
+      "source": "./plugins/prd-parallel-execution",
+      "description": "PRD to parallel implementation execution system with contract-first development approach and automated subagent orchestration",
+      "version": "1.0.0",
+      "author": {
+        "name": "Claude Marketplace Team",
+        "email": "team@claude-marketplace.com"
+      },
+      "homepage": "https://github.com/p-wegner/claude-marketplace",
+      "repository": "https://github.com/p-wegner/claude-marketplace",
+      "license": "MIT",
+      "keywords": ["prd", "parallel", "execution", "implementation", "contract-first", "development", "planning", "automation"],
+      "category": "development",
+      "tags": ["prd", "parallel", "execution", "implementation", "contract-first", "automation", "skills", "commands"],
+      "commands": [
+        "./commands/execute-prd-plan.md"
+      ],
+      "skills": [
+        "./skills/prd-to-implementation-plan"
+      ],
+      "strict": true
     }
   ]
 }
