@@ -1,8 +1,8 @@
 {
-  "name": "claude-marketplace",
+  "name": "peters-cc-market",
   "owner": {
-    "name": "Claude Marketplace Team",
-    "email": "team@claude-marketplace.com"
+    "name": "Peter Wegner",
+    "email": "peter.wegner@andrena.de"
   },
   "metadata": {
     "description": "A curated marketplace for Claude Code agents, plugins, skills, and styles",
