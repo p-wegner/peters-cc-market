@@ -10,8 +10,6 @@
   "repository": "https://github.com/p-wegner/claude-marketplace",
   "license": "MIT",
   "keywords": ["skills", "commands", "creation", "templates", "productivity", "development"],
-  "category": "productivity",
-  "tags": ["skills", "commands", "creation", "templates", "automation"],
   "skills": [
     "./skills/skill-creator",
     "./skills/command-creator"

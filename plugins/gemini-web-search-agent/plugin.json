@@ -9,8 +9,6 @@
   "repository": "https://github.com/p-wegner/claude-marketplace",
   "license": "MIT",
   "keywords": ["search", "web", "gemini", "information", "current"],
-  "category": "agents",
-  "tags": ["search", "web", "gemini", "research"],
   "agents": [
     "gemini-web-search-agent.md"
   ]
