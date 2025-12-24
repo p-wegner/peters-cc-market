@@ -8,26 +8,44 @@
 | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/add-dir`                | Add additional working directories                                                                                                           |
 | `/agents`                 | Manage custom AI subagents for specialized tasks                                                                                             |
+| `/bashes`                 | List and manage background tasks                                                                                                             |
 | `/bug`                    | Report bugs (sends conversation to Anthropic)                                                                                                |
 | `/clear`                  | Clear conversation history                                                                                                                   |
 | `/compact [instructions]` | Compact conversation with optional focus instructions                                                                                        |
 | `/config`                 | Open the Settings interface (Config tab)                                                                                                     |
+| `/context`                | Visualize current context usage as a colored grid                                                                                            |
 | `/cost`                   | Show token usage statistics (see [cost tracking guide](/en/docs/claude-code/costs#using-the-cost-command) for subscription-specific details) |
 | `/doctor`                 | Checks the health of your Claude Code installation                                                                                           |
+| `/exit`                   | Exit the REPL                                                                                                                                 |
+| `/export [filename]`      | Export the current conversation to a file or clipboard                                                                                       |
 | `/help`                   | Get usage help                                                                                                                               |
+| `/hooks`                  | Manage hook configurations for tool events                                                                                                   |
+| `/ide`                    | Manage IDE integrations and show status                                                                                                      |
 | `/init`                   | Initialize project with CLAUDE.md guide                                                                                                      |
+| `/install-github-app`     | Set up Claude GitHub Actions for a repository                                                                                                |
 | `/login`                  | Switch Anthropic accounts                                                                                                                    |
 | `/logout`                 | Sign out from your Anthropic account                                                                                                         |
 | `/mcp`                    | Manage MCP server connections and OAuth authentication                                                                                       |
 | `/memory`                 | Edit CLAUDE.md memory files                                                                                                                  |
 | `/model`                  | Select or change the AI model                                                                                                                |
+| `/output-style [style]`   | Set the output style directly or from a selection menu                                                                                       |
 | `/permissions`            | View or update [permissions](/en/docs/claude-code/iam#configuring-permissions)                                                               |
-| `/pr_comments`            | View pull request comments                                                                                                                   |
+| `/plugin`                 | Manage Claude Code plugins                                                                                                                   |
+| `/pr-comments`            | View pull request comments                                                                                                                   |
+| `/privacy-settings`       | View and update your privacy settings                                                                                                        |
+| `/release-notes`          | View release notes                                                                                                                           |
+| `/rename <name>`          | Rename the current session for easier identification                                                                                         |
+| `/resume [session]`       | Resume a conversation by ID or name, or open the session picker                                                                             |
 | `/review`                 | Request code review                                                                                                                          |
 | `/rewind`                 | Rewind the conversation and/or code                                                                                                          |
+| `/sandbox`                | Enable sandboxed bash tool with filesystem and network isolation for safer, more autonomous execution                                        |
+| `/security-review`        | Complete a security review of pending changes on the current branch                                                                          |
+| `/stats`                  | Visualize daily usage, session history, streaks, and model preferences                                                                      |
 | `/status`                 | Open the Settings interface (Status tab) showing version, model, account, and connectivity                                                   |
+| `/statusline`             | Set up Claude Code's status line UI                                                                                                          |
 | `/terminal-setup`         | Install Shift+Enter key binding for newlines (iTerm2 and VSCode only)                                                                        |
-| `/usage`                  | Show plan usage limits and rate limit status (subscription plans only)                                                                       |
+| `/todos`                  | List current TODO items                                                                                                                      |
+| `/usage`                  | For subscription plans only: show plan usage limits and rate limit status                                                                   |
 | `/vim`                    | Enter vim mode for alternating insert and command modes                                                                                      |
 
 ## Custom slash commands
@@ -310,13 +328,17 @@ Use the `/mcp` command to:
 
 ### MCP permissions and wildcards
 
-When configuring [permissions for MCP tools](/en/docs/claude-code/iam#tool-specific-permission-rules), note that **wildcards are not supported**:
+To approve all tools from an MCP server, use either the server name alone or wildcard syntax:
 
-* ✅ **Correct**: `mcp__github` (approves ALL tools from the github server)
-* ✅ **Correct**: `mcp__github__get_issue` (approves specific tool)
-* ❌ **Incorrect**: `mcp__github__*` (wildcards not supported)
+* `mcp__github` (approves all GitHub tools)
+* `mcp__github__*` (wildcard syntax, also approves all GitHub tools)
 
-To approve all tools from an MCP server, use just the server name: `mcp__servername`. To approve specific tools only, list each tool individually.
+To approve specific tools, list each one explicitly:
+
+* `mcp__github__get_issue`
+* `mcp__github__list_issues`
+
+See MCP permission rules for more details.
 
 ## `SlashCommand` tool
 

@@ -145,12 +145,14 @@ the subagent should follow.
 
 #### Configuration fields
 
-| Field         | Required | Description                                                                                                                                                                                                                      |
-| :------------ | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`        | Yes      | Unique identifier using lowercase letters and hyphens                                                                                                                                                                            |
-| `description` | Yes      | Natural language description of the subagent's purpose                                                                                                                                                                           |
-| `tools`       | No       | Comma-separated list of specific tools. If omitted, inherits all tools from the main thread                                                                                                                                      |
-| `model`       | No       | Model to use for this subagent. Can be a model alias (`sonnet`, `opus`, `haiku`) or `'inherit'` to use the main conversation's model. If omitted, defaults to the [configured subagent model](/en/docs/claude-code/model-config) |
+| Field            | Required | Description                                                                                                                                                                                                                      |
+| :--------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`           | Yes      | Unique identifier using lowercase letters and hyphens                                                                                                                                                                            |
+| `description`    | Yes      | Natural language description of the subagent's purpose                                                                                                                                                                           |
+| `tools`          | No       | Comma-separated list of specific tools. If omitted, inherits all tools from the main thread                                                                                                                                      |
+| `model`          | No       | Model to use for this subagent. Can be a model alias (`sonnet`, `opus`, `haiku`) or `'inherit'` to use the main conversation's model. If omitted, defaults to the [configured subagent model](/en/docs/claude-code/model-config) |
+| `permissionMode` | No       | Permission mode for the subagent. Valid values: `default`, `acceptEdits`, `bypassPermissions`, `plan`, `ignore`. Controls how the subagent handles permission requests                                                              |
+| `skills`         | No       | Comma-separated list of skill names to auto-load when the subagent starts. Skills are loaded into the subagent's context automatically                                                                                            |
 
 ### Model selection
 
@@ -361,6 +363,48 @@ Always ensure queries are efficient and cost-effective.
 * **Version control**: Check project subagents into version control so your team can benefit from and improve them collaboratively.
 
 ## Advanced usage
+
+### Resumable subagents
+
+Subagents can be resumed to continue previous conversations, which is particularly useful for long-running research or analysis tasks that need to be continued across multiple invocations.
+
+**How it works:**
+
+* Each subagent execution is assigned a unique `agentId`
+* The agent's conversation is stored in a separate transcript file: `agent-{agentId}.jsonl`
+* You can resume a previous agent by providing its `agentId` via the `resume` parameter
+* When resumed, the agent continues with full context from its previous conversation
+
+**Example workflow:**
+
+Initial invocation:
+
+```
+> Use the code-analyzer agent to start reviewing the authentication module
+
+[Agent completes initial analysis and returns agentId: "abc123"]
+```
+
+Resume the agent:
+
+```
+> Resume agent abc123 and now analyze the authorization logic as well
+
+[Agent continues with full context from previous conversation]
+```
+
+**Use cases:**
+
+* **Long-running research**: Break down large codebase analysis into multiple sessions
+* **Iterative refinement**: Continue refining a subagent's work without losing context
+* **Multi-step workflows**: Have a subagent work on related tasks sequentially while maintaining context
+
+**Technical details:**
+
+* Agent transcripts are stored in your project directory
+* Recording is disabled during resume to avoid duplicating messages
+* Both synchronous and asynchronous agents can be resumed
+* The `resume` parameter accepts the agent ID from a previous execution
 
 ### Chaining subagents
 
