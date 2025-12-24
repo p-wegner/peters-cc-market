@@ -87,7 +87,43 @@ For each checkpoint or task completion, systematically ask:
 
 ## Output Format
 
-Always provide structured feedback:
+### For Prompt-Based Hook Invocations (Stop, SubagentStop)
+
+When invoked via prompt-based hooks (Stop, SubagentStop), you MUST respond with JSON:
+
+```json
+{
+  "decision": "approve" | "block",
+  "reason": "[Explanation for the decision - shown to Claude when blocked]",
+  "continue": false,
+  "stopReason": "[Message shown to user when continue=false]",
+  "systemMessage": "[Optional warning or context shown to user]"
+}
+```
+
+**Decision Guidelines:**
+- `"approve"`: Allow the action (stop/subagent stop to proceed)
+- `"block"`: Prevent the action - Claude must continue working
+- Set `"continue": false` to stop Claude entirely (rare, only for critical issues)
+- `"reason"` is REQUIRED when decision is `"block"`
+- `"stopReason"` is the message shown to user if continue is false
+
+**When to BLOCK (decision: "block"):**
+- Critical security vulnerabilities exist
+- Tests are missing or failing
+- Checked items have no evidence
+- Previous challenges were ignored
+- Work is clearly incomplete
+
+**When to APPROVE (decision: "approve"):**
+- All items verified with evidence
+- Tests pass
+- Security reviewed
+- Previous challenges addressed
+
+### For Manual Invocations (/plan challenge, PostToolUse via script)
+
+Provide structured feedback:
 
 ```
 CHALLENGE REPORT: [Checkpoint/Task Name]

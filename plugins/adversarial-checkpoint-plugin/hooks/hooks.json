@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/challenger-trigger.py post-tool",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/challenger-trigger.py post-tool",
             "timeout": 30
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "CHALLENGE POINT: Claude is attempting to stop. Review all recently completed work items. Challenge: Are all checkboxes actually complete with evidence? Were your previous challenges addressed? What critical issues remain? Provide structured challenge report. If work is incomplete or critical issues exist, you MUST set decision: 'block' with clear reason.",
+            "prompt": "CHALLENGE POINT: Claude is attempting to stop. Review: $ARGUMENTS. Challenge all recently completed work items. Are all checkboxes actually complete with evidence? Were your previous challenges addressed? What critical issues remain? Provide structured challenge report. If work is incomplete or critical issues exist, you MUST set decision: 'block' with clear reason.",
             "timeout": 60
           }
         ]
@@ -29,7 +29,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "CHALLENGE POINT: Subagent completed. Review: Did the subagent stay within scope? Were assumptions challenged? Is the quality sufficient? Challenge the work rigorously before allowing stop.",
+            "prompt": "CHALLENGE POINT: Subagent completed. Review: $ARGUMENTS. Challenge: Did the subagent stay within scope? Were assumptions challenged? Is the quality sufficient? Challenge the work rigorously before allowing stop.",
             "timeout": 45
           }
         ]
@@ -40,7 +40,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/challenger-trigger.py check-plan-exists",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/challenger-trigger.py check-plan-exists",
             "timeout": 10
           }
         ]
@@ -48,11 +48,21 @@
     ],
     "SessionStart": [
       {
-        "matcher": "startup|resume",
+        "matcher": "startup",
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/challenger-trigger.py init-challenger",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/challenger-trigger.py init-challenger",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/challenger-trigger.py init-challenger",
             "timeout": 15
           }
         ]
