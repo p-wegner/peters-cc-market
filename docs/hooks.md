@@ -38,15 +38,15 @@ Hooks are organized by matchers, where each matcher can have multiple hooks:
 ```
 
 * **matcher**: Pattern to match tool names, case-sensitive (only applicable for
-  `PreToolUse` and `PostToolUse`)
+  `PreToolUse`, `PermissionRequest`, and `PostToolUse`)
   * Simple strings match exactly: `Write` matches only the Write tool
   * Supports regex: `Edit|Write` or `Notebook.*`
   * Use `*` to match all tools. You can also use empty string (`""`) or leave
     `matcher` blank.
-* **hooks**: Array of commands to execute when the pattern matches
-  * `type`: Currently only `"command"` is supported
-  * `command`: The bash command to execute (can use `$CLAUDE_PROJECT_DIR`
-    environment variable)
+* **hooks**: Array of hooks to execute when the pattern matches
+  * `type`: Hook execution type - `"command"` for bash commands or `"prompt"` for LLM-based evaluation
+  * `command`: (For `type: "command"`) The bash command to execute (can use `$CLAUDE_PROJECT_DIR` environment variable)
+  * `prompt`: (For `type: "prompt"`) The prompt to send to the LLM for evaluation
   * `timeout`: (Optional) How long a command should run, in seconds, before
     canceling that specific command.
 
@@ -143,6 +143,88 @@ ensuring they work regardless of Claude's current directory:
 
 See the [plugin components reference](/en/docs/claude-code/plugins-reference#hooks) for details on creating plugin hooks.
 
+## Prompt-Based Hooks
+
+In addition to bash command hooks (`type: "command"`), Claude Code supports prompt-based hooks (`type: "prompt"`) that use an LLM to evaluate whether to allow or block an action. Prompt-based hooks are currently only supported for `Stop` and `SubagentStop` hooks, where they enable intelligent, context-aware decisions.
+
+### How prompt-based hooks work
+
+Instead of executing a bash command, prompt-based hooks:
+
+1. Send the hook input and your prompt to a fast LLM (Haiku)
+2. The LLM responds with structured JSON containing a decision
+3. Claude Code processes the decision automatically
+
+### Configuration
+
+```json  theme={null}
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Evaluate if Claude should stop: $ARGUMENTS. Check if all tasks are complete."
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Fields:**
+
+* `type`: Must be `"prompt"`
+* `prompt`: The prompt text to send to the LLM
+  * Use `$ARGUMENTS` as a placeholder for the hook input JSON
+  * If `$ARGUMENTS` is not present, input JSON is appended to the prompt
+* `timeout`: (Optional) Timeout in seconds (default: 30 seconds)
+
+### Response schema
+
+The LLM must respond with JSON containing:
+
+```json  theme={null}
+{
+  "decision": "approve" | "block",
+  "reason": "Explanation for the decision",
+  "continue": false,  // Optional: stops Claude entirely
+  "stopReason": "Message shown to user",  // Optional: custom stop message
+  "systemMessage": "Warning or context"  // Optional: shown to user
+}
+```
+
+**Response fields:**
+
+* `decision`: `"approve"` allows the action, `"block"` prevents it
+* `reason`: Explanation shown to Claude when decision is `"block"`
+* `continue`: (Optional) If `false`, stops Claude's execution entirely
+* `stopReason`: (Optional) Message shown when continue is false
+* `systemMessage`: (Optional) Additional message shown to the user
+
+### Supported hook events
+
+Prompt-based hooks work with any hook event, but are most useful for:
+
+* **Stop**: Intelligently decide if Claude should continue working
+* **SubagentStop**: Evaluate if a subagent has completed its task
+* **UserPromptSubmit**: Validate user prompts with LLM assistance
+* **PreToolUse**: Make context-aware permission decisions
+* **PermissionRequest**: Intelligently allow or deny permission dialogs
+
+### Comparison with bash command hooks
+
+| Feature | Bash Command Hooks | Prompt-Based Hooks |
+| --- | --- | --- |
+| **Execution** | Runs bash script | Queries LLM |
+| **Decision logic** | You implement in code | LLM evaluates context |
+| **Setup complexity** | Requires script file | Configure prompt |
+| **Context awareness** | Limited to script logic | Natural language understanding |
+| **Performance** | Fast (local execution) | Slower (API call) |
+| **Use case** | Deterministic rules | Context-aware decisions |
+
 ## Hook Events
 
 ### PreToolUse
@@ -168,12 +250,53 @@ Recognizes the same matcher values as PreToolUse.
 
 ### Notification
 
-Runs when Claude Code sends notifications. Notifications are sent when:
+Runs when Claude Code sends notifications. Supports matchers to filter by notification type.
 
-1. Claude needs your permission to use a tool. Example: "Claude needs your
-   permission to use Bash"
-2. The prompt input has been idle for at least 60 seconds. "Claude is waiting
-   for your input"
+**Common matchers:**
+
+* `permission_prompt` - Permission requests from Claude Code
+* `idle_prompt` - When Claude is waiting for user input (after 60+ seconds of idle time)
+* `auth_success` - Authentication success notifications
+* `elicitation_dialog` - When Claude Code needs input for MCP tool elicitation
+
+You can use matchers to run different hooks for different notification types, or omit the matcher to run hooks for all notifications.
+
+**Example: Different notifications for different types**
+
+```json  theme={null}
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/path/to/permission-alert.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/path/to/idle-notification.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### PermissionRequest
+
+Runs when the user is shown a permission dialog.
+
+Use PermissionRequest decision control to allow or deny on behalf of the user.
+
+Recognizes the same matcher values as PreToolUse.
 
 ### UserPromptSubmit
 
@@ -203,7 +326,7 @@ Runs before Claude Code is about to run a compact operation.
 
 Runs when Claude Code starts a new session or resumes an existing session (which
 currently does start a new session under the hood). Useful for loading in
-development context like existing issues or recent changes to your codebase.
+development context like existing issues or recent changes to your codebase, installing dependencies, or setting up environment variables.
 
 **Matchers:**
 
@@ -211,6 +334,47 @@ development context like existing issues or recent changes to your codebase.
 * `resume` - Invoked from `--resume`, `--continue`, or `/resume`
 * `clear` - Invoked from `/clear`
 * `compact` - Invoked from auto or manual compact.
+
+#### Persisting environment variables
+
+SessionStart hooks have access to the `CLAUDE_ENV_FILE` environment variable, which provides a file path where you can persist environment variables for subsequent bash commands.
+
+**Example: Setting individual environment variables**
+
+```bash
+#!/bin/bash
+
+if [ -n "$CLAUDE_ENV_FILE" ]; then
+  echo 'export NODE_ENV=production' >> "$CLAUDE_ENV_FILE"
+  echo 'export API_KEY=your-api-key' >> "$CLAUDE_ENV_FILE"
+  echo 'export PATH="$PATH:./node_modules/.bin"' >> "$CLAUDE_ENV_FILE"
+fi
+
+exit 0
+```
+
+**Example: Persisting all environment changes from the hook**
+
+When your setup modifies the environment (for example, `nvm use`), capture and persist all changes by diffing the environment:
+
+```bash
+#!/bin/bash
+
+ENV_BEFORE=$(export -p | sort)
+
+# Run your setup commands that modify the environment
+source ~/.nvm/nvm.sh
+nvm use 20
+
+if [ -n "$CLAUDE_ENV_FILE" ]; then
+  ENV_AFTER=$(export -p | sort)
+  comm -13 <(echo "$ENV_BEFORE") <(echo "$ENV_AFTER") >> "$CLAUDE_ENV_FILE"
+fi
+
+exit 0
+```
+
+Any variables written to this file will be available in all subsequent bash commands that Claude Code executes during the session.
 
 ### SessionEnd
 
